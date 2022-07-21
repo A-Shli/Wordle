@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>b-wordle BETTER WORDLE</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+    <body>
+        <header>
+            <!-- <div class="" -->
+            <div class="title">b-wordle</div>
+        </header>
+        <div class="popup">
+            <button id="close">&times;</button>
+            <h2>b-wordle instructions</h2>
+            <p>
+                Guess the word in six tries.
+
+Each guess must be a valid five-letter word. Hit the enter button to submit.
+
+After each guess, the color of the tiles will change to show how close your guess was to the word.
+
+If the letter is GREEN, it is in in the word and the right position. 
+
+If the letter is ORANGE, it is in the word but in the wrong position. 
+
+If the letter is GREY, it is not in the word.
+
+A new word will be available each day. 
+            </p>
+        </div>
+        <div class ="end-message">
+            <button id ="close">&times;</button>
+            <h2>Game Over</h2>
+            <p>
+
+            </p>
+        </div>
+        <div class="game-container">
+            <!-- <div class="title-container">
+                <h1>b-wordle</h1> -->
+            <!-- </div> -->
+            <div class="tile-container"></div>
+            <div class="message-container"></div>
+        
+            <br>
+            <div class="key-container"></div>
+             
+        </div>
+
+        <script src="webApp.js" type = module></script>
+    </body>
+</html>

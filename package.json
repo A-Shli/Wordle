@@ -1,0 +1,24 @@
+{
+  "name": "wordle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webApp.js",
+  "type": "module",
+  "scripts": {
+    "start:": "nodemon server.js"
+  },
+  "author": "Ala Shlibak <up2026661@myport.ac.uk>",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.2",
+    "express": "^4.17.3",
+    "node-schedule": "^2.1.0",
+    "sqlite": "^4.1.1",
+    "sqlite3": "^5.0.8",
+    "uuid": "^8.3.2",
+    "uuid-random": "^1.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
