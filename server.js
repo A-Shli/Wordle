@@ -18,7 +18,7 @@ app.use(express.static('public'));
 
 app.post('/checkWord', express.json(), async (req,res) => {
     let result = [];
-    if (await mb.checkWord(req.body.guess) === false) {
+    if (await mb.wordChecker(req.body.guess) === false) {
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(result));
         return;
@@ -47,43 +47,39 @@ app.get('/getWordOfTheDay', (req, res) => {
 
   });
 
-// app.set('content-type', 'text/json')
-// app.use(bodyParser.urlencoded({ extended: true}));
-// app.use(bodyParser.json());
-
 
 // Check the guessed word against the word of the day
-function wordChecker(guessWord, correctWord) {
+function wordChecker(wordGuess, correctWord) {
     const numArr = ['0','0','0','0','0'];
-    guessWord = guessWord.toUpperCase();
-    const guessArr = guessWord.split('');
-    const wordOfTheDayArr = correctWord.split('');
-    checkCharInWordPos(guessArr, wordOfTheDayArr, numArr);
-    checkCharInWordExists(guessArr, wordOfTheDayArr, numArr);
+    wordGuess = wordGuess.toUpperCase();
+    const guessArr = wordGuess.split('');
+    const todaysWordArr = correctWord.split('');
+    checkCharInWordPos(guessArr, todaysWordArr, numArr);
+    checkCharInWordExists(guessArr, todaysWordArr, numArr);
     return numArr;
    
 }
 
 // Check if character is in correct position
-function checkCharInWordPos(guessWordArr, wordOfTheDayArr, numArr) {
-    for( let i = 0; i < wordOfTheDayArr.length; i++ ) {
-        if(wordOfTheDayArr[i] === guessWordArr[i]) {
+function checkCharInWordPos(wordGuessArr, todaysWordArr, numArr) {
+    for( let i = 0; i < todaysWordArr.length; i++ ) {
+        if(todaysWordArr[i] === wordGuessArr[i]) {
             numArr[i] = '2';
-            wordOfTheDayArr[i] = '';
-            guessWordArr[i] = '';
+            todaysWordArr[i] = '';
+            wordGuessArr[i] = '';
         }
     }
 }
 
 // Check if character is in word
-function checkCharInWordExists(guessWordArr, wordOfTheDayArr, numArr) {
-    for(let i = 0; i < wordOfTheDayArr.length; i++) {
-        if(guessWordArr[i] != '' && wordOfTheDayArr.includes(guessWordArr[i])) {
+function checkCharInWordExists(wordGuessArr, todaysWordArr, numArr) {
+    for(let i = 0; i < todaysWordArr.length; i++) {
+        if(wordGuessArr[i] != '' && todaysWordArr.includes(wordGuessArr[i])) {
             numArr[i] = '1';
-            let char = guessWordArr[i];
-            let index = wordOfTheDayArr.indexOf(char);
-            wordOfTheDayArr[index] = '';
-            guessWordArr[i] = '';
+            let chr = wordGuessArr[i];
+            let ind = todaysWordArr.indexOf(chr);
+            todaysWordArr[ind] = '';
+            wordGuessArr[i] = '';
         }
     }
 }

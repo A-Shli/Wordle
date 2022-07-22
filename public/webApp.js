@@ -54,6 +54,7 @@ const keys = [
     'ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'DEL',
 ]
 
+// array of arrays for each guess
 const guessArr = [
     ['', '', '', '', ''],
     ['', '', '', '', ''],
@@ -81,7 +82,7 @@ keys.forEach(key => {
     const btn = document.createElement('button')
     btn.textContent = key
     btn.setAttribute('id', key)
-    btn.addEventListener('click', () => handleClick(key))
+    btn.addEventListener('click', () => clickHandler(key))
     keyboard.append(btn)
 })
 
@@ -90,11 +91,11 @@ document.addEventListener("keydown", (e) => {
     if(!isGameOver){
         let pressKey = String(e.key.toUpperCase())
         if (pressKey === "ENTER") {
-            checkRow()
+            rowChecker()
             return
         }
         if (pressKey === "BACKSPACE"){
-            deleteLetter()
+            removeLetter()
             return
         }
         
@@ -107,14 +108,35 @@ document.addEventListener("keydown", (e) => {
     }}
 )
 
-const handleClick = (letter) => {
+const addLetter = (letter) => {
+    if(!isGameOver){
+        if (currentTile < 5 && currentRow < 6) {
+        const tile = document.querySelector('#guessRow-' + currentRow + '-tile-' + currentTile)
+        tile.textContent = letter
+        guessArr[currentRow][currentTile] = letter
+        tile.setAttribute('data', letter)
+        currentTile++
+    }}
+}
+
+const removeLetter = () => {
+    if (currentTile > 0) {
+        currentTile--
+        const tile = document.querySelector('#guessRow-' + currentRow + '-tile-' + currentTile)
+        tile.textContent = ''
+        guessArr[currentRow][currentTile] = ''
+        tile.setAttribute('data', '')
+    }
+}
+
+const clickHandler = (letter) => {
     if (!isGameOver) {
         if (letter === 'DEL') {
-            deleteLetter()
+            removeLetter()
             return
         }
         if (letter === 'ENTER') {
-            checkRow()
+            rowChecker()
             return
         }
     }
@@ -128,45 +150,24 @@ const showMessage = (message) => {
     setTimeout(() => messageDisplay.removeChild(messageElement), 2000)
 }
 
-const addLetter = (letter) => {
-    if(!isGameOver){
-        if (currentTile < 5 && currentRow < 6) {
-        const tile = document.querySelector('#guessRow-' + currentRow + '-tile-' + currentTile)
-        tile.textContent = letter
-        guessArr[currentRow][currentTile] = letter
-        tile.setAttribute('data', letter)
-        currentTile++
-    }}
-}
-
-const deleteLetter = () => {
-    if (currentTile > 0) {
-        currentTile--
-        const tile = document.querySelector('#guessRow-' + currentRow + '-tile-' + currentTile)
-        tile.textContent = ''
-        guessArr[currentRow][currentTile] = ''
-        tile.setAttribute('data', '')
-    }
-}
-
-
 function delay(time){
     if(!isGameOver){
     return new Promise(resolve => setTimeout(resolve,time));
 }}
 
-const checkRow = () => {
+
+
+const rowChecker = () => {
     let guess = guessArr[currentRow].join('')
     guess = guess.toLowerCase();
 
-    
     if (currentTile > 4) {
         validateGuess(guess).then(valid =>{
             if (valid) {
                 sendGuess(guess)
                 if (currentRow > 7){
                     isGameOver = false
-                    showMessage('Game Over :(')
+                    showMessage('Game Over!')
                     showMessage(wordle)
                     return
                 }
@@ -177,7 +178,7 @@ const checkRow = () => {
                 return;
             }
             else {
-                showMessage('Invalid Guess')
+                showMessage('Invalid Guess, try again')
                 return;
             }
         })        
@@ -186,7 +187,7 @@ const checkRow = () => {
 
 
 const addColorToKey = (keyLetter, color) => {
-    const key = document.getElementById(keyLetter) // change to querySelector which requires id or class instead of keyletter
+    const key = document.getElementById(keyLetter) 
     key.classList.add(color)
 }
 
@@ -245,7 +246,7 @@ async function sendGuess(word) {
         resultOfGuess +=[data];
 
         if (checkWinner(data)){
-            win();
+            winGame();
             }
         if (guessCount ===6){
             loseGame();
@@ -255,7 +256,7 @@ async function sendGuess(word) {
 }
 
 let valid = true;
-
+//checks the word is valid
 async function validateGuess (guess){
     guess = guess;
     const response = await fetch ('https://dictionary-dot-sse-2020.nw.r.appspot.com/'+guess);
@@ -278,6 +279,7 @@ function checkWinner(data){
     return true;
 }
 
+
 function pause(){
     const localGame = JSON.parse(localStorage.getItem('currentSession'));
     const currentRow = localGame.currentRow;
@@ -294,7 +296,6 @@ function pause(){
 }
 
 
-
 async function getSessionID() {
     const response = await fetch('/checkSession');
     if (response.ok) {
@@ -303,7 +304,8 @@ async function getSessionID() {
     }
   }
 
-async function win(){
+  //function for popup upon winning
+async function winGame(){
     isGameOver = true;
     streak +=1;
     if (streak > highScore){ highScore = streak};
@@ -323,10 +325,12 @@ async function win(){
     winPopUp.innerText = (string);
     winPopUp.style.display = "block";
 }
+
+//function for popup upon losing
 async function loseGame(){
     isGameOver = true;
 
-    streak ===0;
+    streak === 0;
     if (streak > highScore){ highScore = streak};
     losses +=1;
     gamesPlayed +=1;

@@ -15,11 +15,11 @@ async function init() {
     return db;
 }
     
-const dbConn = init();
+const dbConnect = init();
 
 // Get the amount of words in the database
 async function dbWordCount(){
-    const db = await dbConn;
+    const db = await dbConnect;
     const wordCount = await db.all('SELECT COUNT(*) FROM Words');
     return wordCount[0]['COUNT(*)'];
 } 
@@ -27,12 +27,12 @@ async function dbWordCount(){
 export async function chooseWordOfTheDay() {
     return await new Promise((resolve) => {
       const latest = async () => {
-        const db = await dbConn;
+        const db = await dbConnect;
         const wordCount = await dbWordCount();
-        const randomSelection = Math.floor(Math.random() * wordCount);
-        const result = await db.all(`SELECT * FROM Words WHERE id = ${randomSelection}`);
-        const randomWord = result[0].word;
-        return randomWord.toUpperCase();
+        const selectRandWord = Math.floor(Math.random() * wordCount);
+        const result = await db.all(`SELECT * FROM Words WHERE id = ${selectRandWord}`);
+        const randWord = result[0].word;
+        return randWord.toUpperCase();
       };
       latest().then((word) => {
         resolve(word);
@@ -41,9 +41,9 @@ export async function chooseWordOfTheDay() {
 }
 
 // Check if word is in DB
-export async function checkWord(word) {
+export async function wordChecker(word) {
     word = word.toUpperCase();
-    const db = await dbConn;
+    const db = await dbConnect;
     const result = await db.all(`SELECT * FROM Words WHERE word = '${word}'`);
     if (result.length > 0) {
         return true;
