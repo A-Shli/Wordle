@@ -1,85 +1,75 @@
-// use the Express.js framework https://expressjs.com/
+// server.js
+
 import express from 'express';
-import bodyParser from 'body-parser';
 import schedule from 'node-schedule';
-import * as mb from './sqlData.js';
 import { v4 as uuidv4 } from 'uuid';
+import * as db from './sqlData.js';  // Using the updated PostgreSQL and API logic
 
 const app = express();
-let todaysWord , todaysSession;
-mb.chooseWordOfTheDay().then((word) => {
-    todaysWord = word;
-    todaysSession = uuidv4();
-    app.listen(8080);
-});
+let todaysWord, todaysSession;
 
+// Middleware for parsing JSON
+app.use(express.json());
 
+// Serve static files from the public folder
 app.use(express.static('public'));
 
-app.post('/checkWord', express.json(), async (req,res) => {
-    let result = [];
-    if (await mb.wordChecker(req.body.guess) === false) {
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify(result));
-        return;
-      }
-      result = wordChecker(req.body.guess, todaysWord.toUpperCase());
-      res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify(result));
-
+// Initialize the database and choose the Word of the Day
+db.init().then(() => {
+  db.chooseWordOfTheDay().then((word) => {
+    todaysWord = word;
+    todaysSession = uuidv4();
+    console.log(`Word of the Day: ${todaysWord}`);  // For debugging
+    app.listen(8080, () => console.log('Server is running on port 8080'));
+  });
 });
 
+// Route: Validate a word and fetch its definition
+app.get('/validate/:word', async (req, res) => {
+  const { word } = req.params;
+  const validationResult = await db.validateAndFetchDefinition(word);
+
+  if (validationResult.valid) {
+    return res.status(200).json({ valid: true, source: validationResult.source, definition: validationResult.definition });
+  } else {
+    return res.status(404).json({ valid: false });
+  }
+});
+
+// Route: Get the Word of the Day
 app.get('/getWordOfTheDay', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(todaysWord));
-  });
-  
-  // Send sessionId to client
-  app.get('/checkSession', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(todaysSession));
-  });
-  
-  // change word and sessionId every 24 hours
-  schedule.scheduleJob('0 0 * * *', async function () {
-    word = await wordDb.chooseWord();
-    sessionId = uuidv4();
+  res.json({ word: todaysWord });
+});
 
+// Route: Handle word checking request
+app.post('/checkWord', async (req, res) => {
+  const { guess } = req.body;
+  if (!guess || guess.length !== 5) {
+    return res.status(400).json({ error: 'Invalid guess format' });
+  }
+
+  // Validate and fetch definition
+  const validationResult = await db.validateAndFetchDefinition(guess);
+  if (!validationResult.valid) {
+    return res.status(404).json({ valid: false });
+  }
+
+  // Compare guess with today's word and generate result
+  const result = compareWords(guess.toUpperCase(), todaysWord.toUpperCase());
+  return res.json({ result, definition: validationResult.definition });
+});
+
+// Route: Check the current session
+app.get('/checkSession', (req, res) => {
+  res.json({ sessionId: todaysSession });
+});
+
+// Helper function to compare guessed word with the word of the day
+function compareWords(guess, actual) {
+  return guess.split('').map((char, index) => {
+    if (char === actual[index]) return '2'; // Correct letter and position
+    else if (actual.includes(char)) return '1'; // Correct letter, wrong position
+    else return '0'; // Incorrect letter
   });
-
-
-// Check the guessed word against the word of the day
-function wordChecker(wordGuess, correctWord) {
-    const numArr = ['0','0','0','0','0'];
-    wordGuess = wordGuess.toUpperCase();
-    const guessArr = wordGuess.split('');
-    const todaysWordArr = correctWord.split('');
-    checkCharInWordPos(guessArr, todaysWordArr, numArr);
-    checkCharInWordExists(guessArr, todaysWordArr, numArr);
-    return numArr;
-   
 }
 
-// Check if character is in correct position
-function checkCharInWordPos(wordGuessArr, todaysWordArr, numArr) {
-    for( let i = 0; i < todaysWordArr.length; i++ ) {
-        if(todaysWordArr[i] === wordGuessArr[i]) {
-            numArr[i] = '2';
-            todaysWordArr[i] = '';
-            wordGuessArr[i] = '';
-        }
-    }
-}
-
-// Check if character is in word
-function checkCharInWordExists(wordGuessArr, todaysWordArr, numArr) {
-    for(let i = 0; i < todaysWordArr.length; i++) {
-        if(wordGuessArr[i] != '' && todaysWordArr.includes(wordGuessArr[i])) {
-            numArr[i] = '1';
-            let chr = wordGuessArr[i];
-            let ind = todaysWordArr.indexOf(chr);
-            todaysWordArr[ind] = '';
-            wordGuessArr[i] = '';
-        }
-    }
-}
