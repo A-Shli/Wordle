@@ -5,6 +5,7 @@ const keyboard = document.querySelector('.key-container');
 const messageDisplay = document.querySelector('.message-container');
 const endMessage = document.querySelector('.end-message');
 let currentSession = '';
+let isProcessingGuess = false;
 
 // Game state variables
 let currentRow = 0;
@@ -149,17 +150,24 @@ const showMessage = (message) => {
 
 // Handle game row submission and check word validity
 const rowChecker = () => {
+  if (isProcessingGuess) return; // Prevent multiple submissions if already processing a guess
+
   let guess = guessArr[currentRow].join('').toLowerCase();
   if (currentTile > 4) {
+    isProcessingGuess = true; // Set the flag to true when processing starts
     validateGuess(guess).then(valid => {
       if (valid) {
-        sendGuess(guess);
+        sendGuess(guess).finally(() => {
+          isProcessingGuess = false; // Reset the flag after processing is complete
+        });
       } else {
         showMessage('Invalid Guess, try again');
+        isProcessingGuess = false; // Reset the flag if the guess is invalid
       }
     });
   }
 };
+
 
 // Add color to the key based on guess result
 const addColorToKey = (keyLetter, color) => {
