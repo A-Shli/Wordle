@@ -284,9 +284,20 @@ async function winGame() {
   wins++;
   gamesPlayed++;
   const winPercentage = ((wins / gamesPlayed) * 100).toFixed(2);
-  const response = await fetch('/getWordOfTheDay');
-  const data = await response.json();
-  showEndMessage('You Win!', data, winPercentage);
+  try {
+      const response = await fetch('/getWordOfTheDay');
+      if (response.ok) {
+          const data = await response.json();
+          const wordOfTheDay = data.word; // Extract the word correctly
+          showEndMessage('You Win!', wordOfTheDay, winPercentage);
+      } else {
+          console.error('Failed to fetch the word of the day');
+          showEndMessage('You Win!', 'Unknown', winPercentage); // Fallback in case of an error
+      }
+  } catch (error) {
+      console.error('Error fetching the word of the day:', error);
+      showEndMessage('You Win!', 'Unknown', winPercentage); // Fallback in case of an error
+  }
 }
 
 // Lose game function
@@ -296,10 +307,22 @@ async function loseGame() {
   losses++;
   gamesPlayed++;
   const winPercentage = ((wins / gamesPlayed) * 100).toFixed(2);
-  const response = await fetch('/getWordOfTheDay');
-  const data = await response.json();
-  showEndMessage('You Lose!', data, winPercentage);
+  try {
+      const response = await fetch('/getWordOfTheDay');
+      if (response.ok) {
+          const data = await response.json();
+          const wordOfTheDay = data.word; // Extract the word correctly
+          showEndMessage('You Lose!', wordOfTheDay, winPercentage);
+      } else {
+          console.error('Failed to fetch the word of the day');
+          showEndMessage('You Lose!', 'Unknown', winPercentage); // Fallback in case of an error
+      }
+  } catch (error) {
+      console.error('Error fetching the word of the day:', error);
+      showEndMessage('You Lose!', 'Unknown', winPercentage); // Fallback in case of an error
+  }
 }
+
 
 // Show the end game message
 const showEndMessage = (result, word, winPercentage) => {
