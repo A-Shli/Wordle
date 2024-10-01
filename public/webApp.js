@@ -326,18 +326,45 @@ async function loseGame() {
 
 // Show the end game message
 const showEndMessage = (result, word, winPercentage) => {
-  const message = `
-    ${result}
-    Today's Word: ${word}
-    Win Percentage: ${winPercentage}%
-    High Score: ${highScore}
-    Current Streak: ${streak}
-    Wins: ${wins}
-    Losses: ${losses}
-  `;
-  endMessage.textContent = message;
+  // Clear any existing content in the end message container
+  endMessage.innerHTML = '';
+
+  // Create elements for each line of the message
+  const resultElement = document.createElement('p');
+  resultElement.textContent = result;
+  resultElement.style.fontWeight = 'bold';
+
+  const wordElement = document.createElement('p');
+  wordElement.textContent = `Today's Word: ${word}`;
+  
+  const winPercentageElement = document.createElement('p');
+  winPercentageElement.textContent = `Win Percentage: ${winPercentage}%`;
+
+  const highScoreElement = document.createElement('p');
+  highScoreElement.textContent = `High Score: ${highScore}`;
+
+  const streakElement = document.createElement('p');
+  streakElement.textContent = `Current Streak: ${streak}`;
+
+  const winsElement = document.createElement('p');
+  winsElement.textContent = `Wins: ${wins}`;
+
+  const lossesElement = document.createElement('p');
+  lossesElement.textContent = `Losses: ${losses}`;
+
+  // Append each element to the endMessage container
+  endMessage.appendChild(resultElement);
+  endMessage.appendChild(wordElement);
+  endMessage.appendChild(winPercentageElement);
+  endMessage.appendChild(highScoreElement);
+  endMessage.appendChild(streakElement);
+  endMessage.appendChild(winsElement);
+  endMessage.appendChild(lossesElement);
+
+  // Display the end message container
   endMessage.style.display = 'block';
 };
+
 
 // Get Session ID from server
 async function getSessionID() {
