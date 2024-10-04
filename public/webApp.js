@@ -5,6 +5,7 @@ const keyboard = document.querySelector('.key-container');
 const messageDisplay = document.querySelector('.message-container');
 const endMessage = document.querySelector('.end-message');
 let currentSession = '';
+let isPopupClosed = false; // Flag to control input based on popup
 let isProcessingGuess = false;
 
 // Game state variables
@@ -49,7 +50,9 @@ window.addEventListener('load', async () => {
 // Handle popup close
 document.querySelector('#close').addEventListener('click', () => {
   document.querySelector('.popup').style.display = 'none';
+  isPopupClosed = true; // Allow input after the popup is closed
 });
+
 
 // Initialize localStorage for session management
 async function localStorageInitialise() {
@@ -90,17 +93,17 @@ keys.forEach(key => {
 
 // Handle keyboard and user input
 document.addEventListener('keydown', (e) => {
-  if (!isGameOver) {
-    let key = e.key.toUpperCase();
+  if (!isPopupClosed || isGameOver) return; // Prevent input if popup is open or game is over
 
-    // Check if the key is a single letter from A-Z or a control key like Enter or Backspace
-    if (key.length === 1 && key >= 'A' && key <= 'Z') {
-      addLetter(key);
-    } else if (key === 'ENTER') {
-      rowChecker();
-    } else if (key === 'BACKSPACE') {
-      removeLetter();
-    }
+  let key = e.key.toUpperCase();
+
+  // Check if the key is a single letter from A-Z or a control key like Enter or Backspace
+  if (key.length === 1 && key >= 'A' && key <= 'Z') {
+    addLetter(key);
+  } else if (key === 'ENTER') {
+    rowChecker();
+  } else if (key === 'BACKSPACE') {
+    removeLetter();
   }
 });
 
@@ -129,16 +132,17 @@ const removeLetter = () => {
 
 // Handle button clicks on virtual keyboard
 const clickHandler = (letter) => {
-  if (!isGameOver) {
-    if (letter === 'DEL') {
-      removeLetter();
-    } else if (letter === 'ENTER') {
-      rowChecker();
-    } else {
-      addLetter(letter);
-    }
+  if (!isPopupClosed || isGameOver) return; // Prevent input if popup is open or game is over
+
+  if (letter === 'DEL') {
+    removeLetter();
+  } else if (letter === 'ENTER') {
+    rowChecker();
+  } else {
+    addLetter(letter);
   }
 };
+
 
 // Show messages to the user
 const showMessage = (message) => {
@@ -195,9 +199,17 @@ const flipTile = (guessedWord) => {
       addColorToKey(guess[index].letter, guess[index].color);
     }, 500 * index);
   });
+
+  // Add delay for showing the end message after all tiles flip
+  const flipAnimationDuration = 500 * guess.length; // 500ms per tile
+  return new Promise((resolve) => {
+    setTimeout(resolve, flipAnimationDuration); // Resolve after the flipping animation is complete
+  });
 };
 
 
+
+// Submit guess to server and process the result
 // Submit guess to server and process the result
 async function sendGuess(word) {
   const payload = { guess: word };
@@ -210,13 +222,15 @@ async function sendGuess(word) {
 
     if (response.ok) {
       const data = await response.json();
-      
+
       if (data.result.length === 0) {
         showMessage('Not a word!');
         return;
       }
 
-      flipTile(data.result); // Ensure you pass the array part of the response to flipTile
+      // Wait for the flipTile function to complete before proceeding
+      await flipTile(data.result);
+
       guessCount++;
       guesses.push(word);
       resultOfGuess.push(data.result);
@@ -225,9 +239,9 @@ async function sendGuess(word) {
       await fetchAndDisplayDefinition(word);
 
       if (checkWinner(data.result)) {
-        winGame();
+        winGame(); // Show win message after flipping is done
       } else if (guessCount === 6) {
-        loseGame();
+        loseGame(); // Show lose message after flipping is done
       } else {
         currentRow++;
         currentTile = 0;
@@ -240,6 +254,7 @@ async function sendGuess(word) {
     console.error(error);
   }
 }
+
 
 
 // Fetch and display the word definition
