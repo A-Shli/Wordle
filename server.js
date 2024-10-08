@@ -72,4 +72,3 @@ function compareWords(guess, actual) {
     else return '0'; // Incorrect letter
   });
 }
-

@@ -1,12 +1,11 @@
-// WebApp.js
-
 const tileDisplay = document.querySelector('.tile-container');
 const keyboard = document.querySelector('.key-container');
 const messageDisplay = document.querySelector('.message-container');
 const endMessage = document.querySelector('.end-message');
-let currentSession = '';
-let isPopupClosed = false; // Flag to control input based on popup
 let isProcessingGuess = false;
+let isPopupClosed = false; // Add flag to control input based on popup
+
+let currentSession = '';
 
 // Game state variables
 let currentRow = 0;
@@ -50,7 +49,7 @@ window.addEventListener('load', async () => {
 // Handle popup close
 document.querySelector('#close').addEventListener('click', () => {
   document.querySelector('.popup').style.display = 'none';
-  isPopupClosed = true; // Allow input after the popup is closed
+  isPopupClosed = true; // Allow input only after the popup is closed
 });
 
 
@@ -72,7 +71,7 @@ async function localStorageInitialise() {
 // Create the game grid and keyboard
 guessArr.forEach((guessRow, guessRowIndex) => {
   const row = document.createElement('div');
-  row.setAttribute('id', 'guessRow-' + guessRowIndex);
+  row.setAttribute('id', `guessRow-${guessRowIndex}`);
   guessRow.forEach((_, guessIndex) => {
     const tileElement = document.createElement('div');
     tileElement.setAttribute('id', `guessRow-${guessRowIndex}-tile-${guessIndex}`);
@@ -143,7 +142,6 @@ const clickHandler = (letter) => {
   }
 };
 
-
 // Show messages to the user
 const showMessage = (message) => {
   const messageElement = document.createElement('p');
@@ -207,9 +205,6 @@ const flipTile = (guessedWord) => {
   });
 };
 
-
-
-// Submit guess to server and process the result
 // Submit guess to server and process the result
 async function sendGuess(word) {
   const payload = { guess: word };
@@ -254,7 +249,6 @@ async function sendGuess(word) {
     console.error(error);
   }
 }
-
 
 
 // Fetch and display the word definition
@@ -338,7 +332,6 @@ async function loseGame() {
   }
 }
 
-
 // Show the end game message
 const showEndMessage = (result, word, winPercentage) => {
   // Clear any existing content in the end message container
@@ -381,7 +374,7 @@ const showEndMessage = (result, word, winPercentage) => {
 };
 
 
-// Get Session ID from server
+// Ensure session ID is obtained 
 async function getSessionID() {
   try {
     const response = await fetch('/checkSession');
