@@ -1,11 +1,148 @@
+
 * {
     color: #ffffff;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
+/* Default Theme (You can tweak this to match your current default) */
 body {
-    background: linear-gradient(to left,rgb(44, 37, 51),rgb(45, 30, 41));
+    background: linear-gradient(to left, rgb(44, 37, 51), rgb(45, 30, 41));
+    transition: background-color 0.5s ease;
 }
+
+
+/* Theme Switcher */
+.theme-switcher {
+    text-align: center;
+    margin-bottom: 2rem; /* Space between buttons and the keyboard */
+    margin-top: 1.5rem; /* Space above the buttons */
+}
+
+.theme-switcher button {
+    background-color: #444; /* Dark background for a modern look */
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 0 0.75rem; /* Space between buttons */
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.theme-switcher button:hover {
+    background-color: #666; /* Lighter background on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover for effect */
+}
+
+.theme-switcher button:active {
+    transform: scale(1); /* Reset scale when clicked */
+}
+
+/* Neon Theme */
+body.neon {
+    background: radial-gradient(circle, #2b5876, #4e4376);
+}
+
+body.neon .tile {
+    background-color: #0f0f0f;
+    border: 0.125rem solid #0ff;
+    color: #0ff;
+    box-shadow: 0 0 10px #0ff;
+}
+
+body.neon .green-overlay {
+    background-color: #39ff14 !important;
+    box-shadow: 0 0 10px #39ff14;
+}
+
+body.neon .yellow-overlay {
+    background-color: #fff44f !important;
+    box-shadow: 0 0 10px #fff44f;
+}
+
+body.neon .grey-overlay {
+    background-color: #808080 !important;
+    box-shadow: 0 0 10px #808080;
+}
+
+body.neon .key-container button {
+    background-color: #0f0f0f;
+    color: #0ff;
+    border-color: #0ff;
+    box-shadow: 0 0 5px #0ff;
+}
+
+body.neon .key-container button:hover {
+    background-color: #0ff;
+    color: #0f0f0f;
+    box-shadow: 0 0 5px #fff;
+}
+
+/* Retro Theme */
+
+body.retro {
+    background-color: #1d1d1d; /* Dark background for contrast */
+    background: linear-gradient(135deg, #1d1d1d 30%, #292929 70%);
+}
+
+body.retro .tile {
+    background-color: #ff7f50; /* Retro Coral tile */
+    border: 0.125rem solid #ff6347; /* Retro Tomato border */
+    color: #fffacd; /* Light yellow text */
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+}
+
+body.retro .tile:hover {
+    transform: scale(1.05);
+}
+
+body.retro .green-overlay {
+    background-color: #32cd32 !important; /* Lime Green for correct letters */
+    border: 0.125rem solid #228b22 !important; /* Forest Green border */
+}
+
+body.retro .yellow-overlay {
+    background-color: #ffd700 !important; /* Retro Yellow for misplaced letters */
+    border: 0.125rem solid #daa520 !important; /* Goldenrod border */
+}
+
+body.retro .grey-overlay {
+    background-color: #a9a9a9 !important; /* Dark Gray for incorrect letters */
+    border: 0.125rem solid #696969 !important; /* Dim Gray border */
+}
+
+body.retro .key-container button {
+    background-color: #4682b4; /* Retro Teal/Blue */
+    color: #f8f8ff; /* Ghost White text */
+    border-color: #4169e1; /* Royal Blue border */
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s, transform 0.2s ease;
+}
+
+body.retro .key-container button:hover {
+    background-color: #5f9ea0; /* Lighter teal on hover */
+    color: #ffffff;
+    border-color: #4682b4;
+    transform: scale(1.1);
+}
+
+body.retro .message-container p {
+    background-color: #ffdab9; /* Peach Puff for retro vibes */
+    color: #000000; /* Black text for contrast */
+    font-family: 'Courier New', Courier, monospace;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    font-weight: bold;
+}
+
 
 header {
     padding: 1rem 1rem;

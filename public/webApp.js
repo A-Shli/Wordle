@@ -68,6 +68,28 @@ async function localStorageInitialise() {
   }
 }
 
+// Apply the last selected theme on page load
+window.addEventListener('load', () => {
+  const selectedTheme = localStorage.getItem('theme');
+  if (selectedTheme) {
+      document.body.classList.add(selectedTheme);
+  }
+});
+
+// Save selected theme in localStorage when switching
+document.getElementById('neon-theme').addEventListener('click', () => {
+  document.body.classList.remove('retro');
+  document.body.classList.add('neon');
+  localStorage.setItem('theme', 'neon');
+});
+
+document.getElementById('retro-theme').addEventListener('click', () => {
+  document.body.classList.remove('neon');
+  document.body.classList.add('retro');
+  localStorage.setItem('theme', 'retro');
+});
+
+
 // Create the game grid and keyboard
 guessArr.forEach((guessRow, guessRowIndex) => {
   const row = document.createElement('div');
