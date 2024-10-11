@@ -40,16 +40,68 @@ window.addEventListener('load', async () => {
     setTimeout(() => {
       document.querySelector('.popup').style.display = 'block';
     }, 1000);
+
+    // Handle theme loading here
+    const selectedTheme = localStorage.getItem('theme');
+    if (selectedTheme) {
+      document.body.classList.add(selectedTheme);
+    } else {
+      // Set Minimalist Light as the default theme if no theme is stored
+      document.body.classList.add('minimalist-light');
+      localStorage.setItem('theme', 'minimalist-light');
+    }
+
+    // Show instructions popup after 1 second
+    setTimeout(() => {
+      const popup = document.querySelector('.popup');
+      popup.style.display = 'block';
+      popup.classList.add('open-popup'); // Add class for animation
+    }, 1000);
   } catch (error) {
     showMessage('Error initializing session');
     console.error(error);
   }
 });
 
-// Handle popup close
-document.querySelector('#close').addEventListener('click', () => {
-  document.querySelector('.popup').style.display = 'none';
-  isPopupClosed = true; // Allow input only after the popup is closed
+// Function to animate tile flipping for popup tiles
+function flipPopupTiles() {
+  const tiles = document.querySelectorAll('.popup-tile');
+  tiles.forEach((tile, index) => {
+      setTimeout(() => {
+          tile.classList.add('flip');
+      }, index * 500);  // Delay each tile flip by 500ms
+  });
+}
+
+// Trigger the flip animation after the popup opens
+function openPopup() {
+  const popup = document.querySelector('.popup');
+  popup.style.display = 'block';  // Show popup
+  setTimeout(() => {
+      popup.classList.add('open-popup');  // Add class for opening animation
+      flipPopupTiles();  // Start flipping tiles after opening
+  }, 10);
+}
+
+// Event listener to close the popup
+function closePopup() {
+  const popup = document.querySelector('.popup');
+  popup.classList.remove('open-popup');  // Close the popup
+  setTimeout(() => {
+      popup.style.display = 'none';
+  }, 300);  // Wait for the closing animation to finish
+}
+
+
+document.querySelector('#startGame').addEventListener('click', () => {
+  const popup = document.querySelector('.popup');
+  popup.classList.remove('open-popup');
+  popup.classList.add('close-popup'); // Add closing animation class
+  setTimeout(() => {
+    popup.style.display = 'none';
+    isPopupClosed = true; // Allow input after the popup is closed
+    popup.classList.remove('close-popup'); // Reset after animation
+  }, 300); // Delay to match the closing animation duration
 });
 
 
@@ -68,27 +120,57 @@ async function localStorageInitialise() {
   }
 }
 
-// Apply the last selected theme on page load
-window.addEventListener('load', () => {
-  const selectedTheme = localStorage.getItem('theme');
-  if (selectedTheme) {
-      document.body.classList.add(selectedTheme);
+// Variables for the settings panel
+const settingsIcon = document.getElementById('settingsIcon');
+const settingsPanel = document.getElementById('settingsPanel');
+const closeSettingsBtn = document.getElementById('closeSettings');
+
+// Open the settings panel when the icon is clicked
+settingsIcon.addEventListener('click', () => {
+  settingsPanel.classList.add('open');
+});
+
+// Close the settings panel
+closeSettingsBtn.addEventListener('click', () => {
+  settingsPanel.classList.remove('open');
+});
+
+// Theme selection function
+function setTheme(theme) {
+  document.body.classList.remove('neon', 'retro', 'minimalist-light');
+  document.body.classList.add(theme);
+  localStorage.setItem('theme', theme);
+}
+
+// Add event listener for the "Other Themes" button
+document.getElementById('other-themes').addEventListener('click', function () {
+  const themeOptions = document.getElementById('themeOptions');
+  if (themeOptions.style.display === 'none' || themeOptions.style.display === '') {
+      themeOptions.style.display = 'block';
+  } else {
+      themeOptions.style.display = 'none';
   }
 });
 
-// Save selected theme in localStorage when switching
-document.getElementById('neon-theme').addEventListener('click', () => {
-  document.body.classList.remove('retro');
-  document.body.classList.add('neon');
-  localStorage.setItem('theme', 'neon');
+
+// Event listeners for theme buttons
+document.getElementById('neon-theme').addEventListener('click', () => setTheme('neon'));
+document.getElementById('retro-theme').addEventListener('click', () => setTheme('retro'));
+document.getElementById('minimalist-theme').addEventListener('click', () => setTheme('minimalist-light'));
+
+// Toggle dark theme
+document.getElementById('dark-mode').addEventListener('change', (e) => {
+  if (e.target.checked) {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+  }
 });
 
-document.getElementById('retro-theme').addEventListener('click', () => {
-  document.body.classList.remove('neon');
-  document.body.classList.add('retro');
-  localStorage.setItem('theme', 'retro');
+// Toggle showing definitions
+document.getElementById('show-definitions').addEventListener('change', (e) => {
+  localStorage.setItem('showDefinitions', e.target.checked);
 });
-
 
 // Create the game grid and keyboard
 guessArr.forEach((guessRow, guessRowIndex) => {
@@ -118,7 +200,6 @@ document.addEventListener('keydown', (e) => {
 
   let key = e.key.toUpperCase();
 
-  // Check if the key is a single letter from A-Z or a control key like Enter or Backspace
   if (key.length === 1 && key >= 'A' && key <= 'Z') {
     addLetter(key);
   } else if (key === 'ENTER') {
@@ -127,7 +208,6 @@ document.addEventListener('keydown', (e) => {
     removeLetter();
   }
 });
-
 
 // Add letter to the grid
 const addLetter = (letter) => {
@@ -153,7 +233,7 @@ const removeLetter = () => {
 
 // Handle button clicks on virtual keyboard
 const clickHandler = (letter) => {
-  if (!isPopupClosed || isGameOver) return; // Prevent input if popup is open or game is over
+  if (!isPopupClosed || isGameOver) return;
 
   if (letter === 'DEL') {
     removeLetter();
@@ -174,24 +254,23 @@ const showMessage = (message) => {
 
 // Handle game row submission and check word validity
 const rowChecker = () => {
-  if (isProcessingGuess) return; // Prevent multiple submissions if already processing a guess
+  if (isProcessingGuess) return;
 
   let guess = guessArr[currentRow].join('').toLowerCase();
   if (currentTile > 4) {
-    isProcessingGuess = true; // Set the flag to true when processing starts
+    isProcessingGuess = true;
     validateGuess(guess).then(valid => {
       if (valid) {
         sendGuess(guess).finally(() => {
-          isProcessingGuess = false; // Reset the flag after processing is complete
+          isProcessingGuess = false;
         });
       } else {
         showMessage('Invalid Guess, try again');
-        isProcessingGuess = false; // Reset the flag if the guess is invalid
+        isProcessingGuess = false;
       }
     });
   }
 };
-
 
 // Add color to the key based on guess result
 const addColorToKey = (keyLetter, color) => {
@@ -220,10 +299,9 @@ const flipTile = (guessedWord) => {
     }, 500 * index);
   });
 
-  // Add delay for showing the end message after all tiles flip
-  const flipAnimationDuration = 500 * guess.length; // 500ms per tile
+  const flipAnimationDuration = 500 * guess.length;
   return new Promise((resolve) => {
-    setTimeout(resolve, flipAnimationDuration); // Resolve after the flipping animation is complete
+    setTimeout(resolve, flipAnimationDuration);
   });
 };
 
@@ -245,20 +323,18 @@ async function sendGuess(word) {
         return;
       }
 
-      // Wait for the flipTile function to complete before proceeding
       await flipTile(data.result);
 
       guessCount++;
       guesses.push(word);
       resultOfGuess.push(data.result);
 
-      // Fetch and display the word definition
       await fetchAndDisplayDefinition(word);
 
       if (checkWinner(data.result)) {
-        winGame(); // Show win message after flipping is done
+        winGame();
       } else if (guessCount === 6) {
-        loseGame(); // Show lose message after flipping is done
+        loseGame();
       } else {
         currentRow++;
         currentTile = 0;
@@ -272,9 +348,11 @@ async function sendGuess(word) {
   }
 }
 
-
 // Fetch and display the word definition
 async function fetchAndDisplayDefinition(word) {
+  const showDefinitions = localStorage.getItem('showDefinitions') === 'true';
+  if (!showDefinitions) return;
+
   try {
     const response = await fetch(`/validate/${word}`);
     if (response.ok) {
@@ -316,18 +394,18 @@ async function winGame() {
   gamesPlayed++;
   const winPercentage = ((wins / gamesPlayed) * 100).toFixed(2);
   try {
-      const response = await fetch('/getWordOfTheDay');
-      if (response.ok) {
-          const data = await response.json();
-          const wordOfTheDay = data.word; // Extract the word correctly
-          showEndMessage('You Win!', wordOfTheDay, winPercentage);
-      } else {
-          console.error('Failed to fetch the word of the day');
-          showEndMessage('You Win!', 'Unknown', winPercentage); // Fallback in case of an error
-      }
+    const response = await fetch('/getWordOfTheDay');
+    if (response.ok) {
+      const data = await response.json();
+      const wordOfTheDay = data.word;
+      showEndMessage('You Win!', wordOfTheDay, winPercentage);
+    } else {
+      console.error('Failed to fetch the word of the day');
+      showEndMessage('You Win!', 'Unknown', winPercentage);
+    }
   } catch (error) {
-      console.error('Error fetching the word of the day:', error);
-      showEndMessage('You Win!', 'Unknown', winPercentage); // Fallback in case of an error
+    console.error('Error fetching the word of the day:', error);
+    showEndMessage('You Win!', 'Unknown', winPercentage);
   }
 }
 
@@ -339,18 +417,18 @@ async function loseGame() {
   gamesPlayed++;
   const winPercentage = ((wins / gamesPlayed) * 100).toFixed(2);
   try {
-      const response = await fetch('/getWordOfTheDay');
-      if (response.ok) {
-          const data = await response.json();
-          const wordOfTheDay = data.word; // Extract the word correctly
-          showEndMessage('You Lose!', wordOfTheDay, winPercentage);
-      } else {
-          console.error('Failed to fetch the word of the day');
-          showEndMessage('You Lose!', 'Unknown', winPercentage); // Fallback in case of an error
-      }
+    const response = await fetch('/getWordOfTheDay');
+    if (response.ok) {
+      const data = await response.json();
+      const wordOfTheDay = data.word;
+      showEndMessage('You Lose!', wordOfTheDay, winPercentage);
+    } else {
+      console.error('Failed to fetch the word of the day');
+      showEndMessage('You Lose!', 'Unknown', winPercentage);
+    }
   } catch (error) {
-      console.error('Error fetching the word of the day:', error);
-      showEndMessage('You Lose!', 'Unknown', winPercentage); // Fallback in case of an error
+    console.error('Error fetching the word of the day:', error);
+    showEndMessage('You Lose!', 'Unknown', winPercentage);
   }
 }
 
@@ -360,7 +438,10 @@ const showEndMessage = (result, word, winPercentage) => {
   endMessage.innerHTML = '';
 
   // Create elements for each line of the message
-  const resultElement = document.createElement('p');
+  const iconElement = document.createElement('div');
+  iconElement.classList.add('icon');
+
+  const resultElement = document.createElement('h2');
   resultElement.textContent = result;
   resultElement.style.fontWeight = 'bold';
 
@@ -383,6 +464,7 @@ const showEndMessage = (result, word, winPercentage) => {
   lossesElement.textContent = `Losses: ${losses}`;
 
   // Append each element to the endMessage container
+  endMessage.appendChild(iconElement);
   endMessage.appendChild(resultElement);
   endMessage.appendChild(wordElement);
   endMessage.appendChild(winPercentageElement);
@@ -390,6 +472,15 @@ const showEndMessage = (result, word, winPercentage) => {
   endMessage.appendChild(streakElement);
   endMessage.appendChild(winsElement);
   endMessage.appendChild(lossesElement);
+
+  // Change the icon based on the result
+  if (result === 'You Win!') {
+      iconElement.innerHTML = '🏆';  // Trophy icon for win
+      endMessage.classList.add('win');
+  } else {
+      iconElement.innerHTML = '😢';  // Sad face icon for lose
+      endMessage.classList.add('lose');
+  }
 
   // Display the end message container
   endMessage.style.display = 'block';
@@ -415,7 +506,6 @@ function pause() {
   currentRow = localGame.currentRow;
   resultOfGuess = localGame.resultOfGuess || [];
 
-  // Reset the game if session has changed
   if (localStorage.getItem('SessionID') !== currentSession) {
     localStorage.setItem('CurrentGame', JSON.stringify({
       resultOfGuess: [],
