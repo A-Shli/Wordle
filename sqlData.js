@@ -6,7 +6,7 @@ const { Pool } = pkg;
 // PostgreSQL connection setup
 const pool = new Pool({
   user: 'words_for_wordle_user',
-  host: 'dpg-cs5u7q56l47c73f8fvjg-a',
+  host: 'dpg-cs5u7q56l47c73f8fvjg-adpg-cs5u7q56l47c73f8fvjg-a.oregon-postgres.render.com',
   database: 'words_for_wordle',
   password: '49aypARy2j5URS9tTrBEmW7ev4tCtTxf', 
   port: 5432,
