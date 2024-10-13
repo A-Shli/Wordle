@@ -4,23 +4,12 @@
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-/* Default Theme */
-body {
-    background: linear-gradient(to left, rgb(44, 37, 51), rgb(45, 30, 41));
-    transition: background-color 0.5s ease;
-}
 
-header {
-    padding: 1rem 1rem;
-    align-items: center;
-    justify-content: space-between;
-    height: 4rem;
-    color: rgb(58, 44, 58);
-    border-bottom: 0.063rem solid white;
-}
 
 .title {
     font-size: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     text-align: center;
 }
 
@@ -289,16 +278,6 @@ body.minimalist-light .message-container p {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Subtle Tile Animations
-body.minimalist-light .tile.flip {
-    animation: flipMinimalist 0.5s linear;
-}
-
-@keyframes flipMinimalist {
-    0% { transform: rotateX(0deg); }
-    50% { transform: rotateX(90deg); }
-    100% { transform: rotateX(0deg); }
-} */
 
 /* Settings Panel in Minimalist Theme */
 body.minimalist-light .settings-panel {
@@ -624,17 +603,6 @@ body.retro .popup button#close, body.retro .end-message button {
     background-color: #9e9e9e;
 }
 
-/* Popup Styling */
-/* .popup {
-    padding: 20px;
-    background-color: #333;
-    border: 1px solid #ff7f50;
-    border-radius: 10px;
-    width: 70%;
-    max-width: 600px;
-    margin: auto;
-    text-align: center;
-} */
 
 .popup-title {
     font-size: 1.8rem;
@@ -720,49 +688,39 @@ body.retro .play-button:hover {
     color: #fffacd;
 }
 
-
 .game-container {
-    height: 90vh;
+    height: 80vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; 
+    /* justify-content: space-between;  */
     align-items: center;
 }
 
 .tile-container {
-    padding-top: 5rem;
-    width: 20.5rem;
+    padding-top: 2rem;
     margin-bottom: 1.8rem;
 }
 
 .key-container {
-    width: 31.875rem;
+    width: 40vw;
     display: flex;
     flex-wrap: wrap;
 }
 
     .key-container button {
-        width: 2.68rem;
-        height: 3.625rem;
+        width: 3vw;
+        height: 6vh;
         border-radius: 0.75rem;
-        border: 0.125rem solid Black;
-        background-color: rgb(19, 11, 27);
-        margin: 0.25rem;
+        margin: 1vh;
         cursor: pointer;
     }
 
-        .key-container button:hover {
-            background: rgb(59, 14, 48); 
-        }
-
         .key-container button:nth-child(11) {
-            margin-left: 1.8rem;
+            margin-left: 2vw;
         }
-
         .key-container button:nth-child(20),
-
         .key-container button:nth-child(28) {
-            width: 4.25rem;
+            width: 5vw;
         }
 
 .tile-container div {
@@ -770,14 +728,14 @@ body.retro .play-button:hover {
 }
 
 .tile-container .tile {
-    width: 3.875rem;
-    height: 3.875rem;
-    border: 0.125rem solid DarkGray;
+    width: 3vw;
+    height: 3vw;
+    border: 0.1vw solid DarkGray;
     box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0.125rem;
+    margin: 0.1vw;
 }
 
 .message-container {
