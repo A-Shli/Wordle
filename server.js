@@ -11,8 +11,8 @@ let todaysWord, todaysSession;
 // Middleware for parsing JSON
 app.use(express.json());
 
-// Serve static files from the public folder
-app.use(express.static('public'));
+// Serve static files from the public/docs folder
+app.use(express.static('docs'));
 
 // Initialize the database and choose the Word of the Day
 db.init().then(() => {
