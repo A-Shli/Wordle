@@ -1,0 +1,32 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # This triggers the workflow when you push to the 'main' branch. Change if using a different branch.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository content
+        uses: actions/checkout@v3
+
+      # Move public folder contents to docs (or root)
+      - name: Move public folder to docs
+        run: |
+          mv public/* ./   # Move contents of public to root dir
+          git config --global user.email "ala.shlibak07@gmail.com"  # Replace with your email
+          git config --global user.name "A-Shli"
+          git add docs/
+          git commit -m "Moved public folder content to docs"
+          git push
+
+      # Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs  # If you want to deploy from docs folder
