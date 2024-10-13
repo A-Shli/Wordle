@@ -5,10 +5,10 @@ const { Pool } = pkg;
 
 // PostgreSQL connection setup
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'wordle',
-  password: 'Queen123', // Replace this with your database password
+  user: 'words_for_wordle_user',
+  host: 'dpg-cs5u7q56l47c73f8fvjg-a',
+  database: 'words_for_wordle',
+  password: '49aypARy2j5URS9tTrBEmW7ev4tCtTxf', 
   port: 5432,
 });
 
