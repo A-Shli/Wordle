@@ -17,6 +17,7 @@ jobs:
       # Move public folder contents to docs (or root)
       - name: Move public folder to docs
         run: |
+          mkdir -p docs   # Create the docs folder
           mv public/* docs/   # Move contents of public to docs folder
           git config --global user.email "ala.shlibak07@gmail.com"  # Replace with your email
           git config --global user.name "A-Shli"
