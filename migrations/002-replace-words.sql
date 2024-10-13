@@ -1,4 +1,3 @@
--- 002-replace-words.sql
 
 -- Step 1: Delete all existing words
 DELETE FROM words;
