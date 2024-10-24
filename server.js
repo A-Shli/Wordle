@@ -12,7 +12,12 @@ let todaysWord, todaysSession;
 app.use(express.json());
 
 // Serve static files from the public/docs folder
-app.use(express.static('docs'));
+app.use(express.static('public'));
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
+
 
 // Initialize the database and choose the Word of the Day
 db.init().then(() => {

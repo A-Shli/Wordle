@@ -5,14 +5,14 @@ const { Pool } = pkg;
 
 // PostgreSQL connection setup
 const pool = new Pool({
-  user: 'words_for_wordle_user',
-  host: 'dpg-cs5u7q56l47c73f8fvjg-adpg-cs5u7q56l47c73f8fvjg-a.oregon-postgres.render.com',
-  database: 'words_for_wordle',
-  password: '49aypARy2j5URS9tTrBEmW7ev4tCtTxf', 
+  user: 'postgres',
+  host: 'localhost',
+  database: 'wordle',
+  password: 'Queen123', 
   port: 5432,
 });
 
-const WORDS_API_KEY = '3e74e188a3mshc300bf57d1c56aap15e2efjsn03e8d8640906'; // Replace with your WordsAPI key
+const WORDS_API_KEY = '3e74e188a3mshc300bf57d1c56aap15e2efjsn03e8d8640906'; 
 const WORDS_API_BASE_URL = 'https://wordsapiv1.p.rapidapi.com/words';
 
 // Initialize the database
